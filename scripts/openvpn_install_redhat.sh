@@ -1,5 +1,5 @@
 #!/bin/bash -e
-HOSTNAME=`hostname`
+HOSTNAME=`hostname -s`
 
 #only install if hostname ends with 0 (only do this for the first master in the cluster)
 if [ ${HOSTNAME: -1} -eq 0 ]
@@ -19,6 +19,7 @@ then
   echo "push \"route ${SUBNETWORK} 255.255.255.0\"" | sudo tee -a server.conf > /dev/null
   echo "tun-mtu 1400" | sudo tee -a server.conf > /dev/null
   echo "mssfix 1360" | sudo tee -a server.conf > /dev/null
+  sudo sed -i "s/explicit-exit-notify 1//g" server.conf
   sudo sed -i "s/;duplicate-cn/duplicate-cn/g" server.conf
   sudo cp -r /usr/share/easy-rsa .
   sudo mkdir -p easy-rsa/keys
