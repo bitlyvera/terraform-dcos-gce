@@ -51,6 +51,10 @@ resource "google_compute_instance" "dcos-master" {
   }
 }
 
+output "master" {
+  value = "${var.gce_ssh_user}@${google_compute_instance.dcos-master.0.network_interface.0.address}"
+}
+
 output "openvpn" {
   value = "${var.gce_ssh_user}@${google_compute_instance.dcos-master.0.network_interface.0.access_config.0.assigned_nat_ip}:/home/${var.gce_ssh_user}/openvpn/client.ovpn"
 }

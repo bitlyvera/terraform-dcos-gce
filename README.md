@@ -91,15 +91,26 @@ scp -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 sudo openvpn --config client.ovpn
 ```
 
-### Visit the web interfaces
-Once the VPN is up, you can access all machines within the cluster using their private IP addresses. Open a second tab to execute the following commands
-
+### View the DC/OS UI 
+Once the VPN is up, you can access the DC/OS ui on the master node:
 ```
-export INTERNAL_IP_M0=`gcloud compute instances list --regexp .*master-0.* --format='value(networkInterfaces[].networkIP.list())'`
-open http://$INTERNAL_IP_M0:5050 # Mesos Console
-open http://$INTERNAL_IP_M0:8080 # Marathon Console
-mesos config master zk://$INTERNAL_IP_M0:2181/mesos # for those who have the local mesos client installed
-curl -s $INTERNAL_IP_M0:5050/master/slaves | python -mjson.tool | grep -e pid -e disk -e cpus
+open http://`terraform output -module dcos master`
+````
+
+### Use the DC/OS CLI on the bootstrap node
+Once the VPN is up, you can access the DC/OS cli on the bootstrap node:
+
+First, ssh into the bootstrap node:
+```
+ssh -o StrictHostKeyChecking=no `terraform output -module dcos bootstrap`
+```
+Now you can e.g. install the spark package...
+```
+dcos package install spark 
+```
+... and run an example job computing Pi:
+```
+dcos spark run --submit-args='-Dspark.mesos.coarse=true --driver-cores 1 --driver-memory 1024M --class org.apache.spark.examples.SparkPi https://downloads.mesosphere.com/spark/assets/spark-examples_2.10-1.4.0-SNAPSHOT.jar 2'
 ```
 
 ### Destroy the cluster
