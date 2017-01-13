@@ -81,8 +81,6 @@ terraform apply my.plan
 
 ### VPN configuration
 
-Ports 80, 443 and 22 are open on all the machines within the cluster. Accessing other ports, e.g. Mesos GUI (port 5050) or Marathon GUI (port 8080) is only possible with VPN connection set up.
-
 Use the following commands to download `client.ovpn` file. Then use it to establish VPN with the cluster.
 
 ```
@@ -98,7 +96,7 @@ open http://`terraform output -module dcos master`
 ````
 
 ### Use the DC/OS CLI on the bootstrap node
-Once the VPN is up, you can access the DC/OS cli on the bootstrap node:
+Once the VPN is up, you can access the DC/OS cli on the bootstrap node.
 
 First, ssh into the bootstrap node:
 ```
