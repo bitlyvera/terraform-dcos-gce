@@ -1,10 +1,13 @@
-# Container Solutions Terraform Mesos
+# Terraform DC/OS
 
-## How to set up a Mesos cluster on the Google Cloud using Terraform
+A fork of [ContainerSolutions' Mesos scripts](https://github.com/ContainerSolutions/terraform-mesos). 
+This README and the scripts have been adapted to work with DC/OS instead of plain Mesos.
+
+## How to set up a DC/OS cluster on the Google Cloud using Terraform
 
 ### Install Terraform
 
-* This module requires Terraform 0.6.16 or greater
+* This module requires Terraform 0.8.2 or greater
 * Follow the instructions on <https://www.terraform.io/intro/getting-started/install.html> to set up Terraform on your machine.
 
 ### Get your Google Cloud JSON account_file
@@ -20,52 +23,37 @@ Authenticating with Google Cloud services requires a JSON file which we call the
 
 ### Add your SSH key to the Project Metadata
 - Back in the Developer Console, go to Compute - Compute Engine - Metadata and click the SSH Keys tab. Add your public SSH key there.
+- Decrypt your ssh key using `openssl`:
+```bash 
+openssl rsa -in ~/.ssh/id_rsa -out decrypted.private.key
+```
 - Use the path to the private key and the username in the next step as `gce_ssh_user` and `gce_ssh_private_key_file`
 
 ### Prepare Terraform configuration file
 
-Create a file `mesos.tf` containing something like this:
+Create a file `dcos.tf` containing something like this:
 
-    module "mesos" {
-        source                      = "github.com/ContainerSolutions/terraform-mesos"
-        account_file                = "/path/to/your.key.json"
-        project                     = "your google project ID"
-        region                      = "europe-west1"
-        zone                        = "europe-west1-d"
-        gce_ssh_user                = "user"
-        gce_ssh_private_key_file    = "/path/to/private.key"
-        name                        = "mymesoscluster"
-        masters                     = "3"
-        slaves                      = "5"
-        subnetwork                  = "10.20.30.0/24"
-        domain                      = "example.com"
-        mesos_version               = "0.28.2"
-        image                       = "rhel-7-v20160418"
-        distribution                = "redhat"
-        slave_machine_type          = "n1-standard-2"
-      # slave_resources             = "cpus(*):0.90; disk(*):7128"
+    module "dcos" {
+        source                   = "github.com/sgreben/terraform-dcos-gce"
+        account_file             = "/path/to/your.key.json"
+        project                  = "your google project ID"
+        region                   = "europe-west1"
+        zone                     = "europe-west1-d"
+        gce_ssh_user             = "user"
+        gce_ssh_private_key_file = "/path/to/private.key"
+        name                     = "mydcoscluster"
+        masters                  = "1"
+        slaves                   = "2"
+        subnetwork               = "10.20.30.0/24"
+        domain                   = "example.com"
+        mesos_version            = "0.28.2"
+        image                    = "centos-cloud/centos-7"
+        slave_machine_type       = "n1-highmem-2"
+        master_machine_type      = "n1-highmem-2"
+      # slave_resources          = "cpus(*):0.90; disk(*):7128"
     }
 
 See the `variables.tf` file for the available variables and their defaults
-
-#### Standard Mesos Ubuntu package
-
-If you set `image` to the standard Ubuntu 15.04 GCE image name, you get the standard Mesos version distributed with this operating system.
-
-    image = "ubuntu-1504-vivid-v20151120"
-
-#### Specific Mesos Ubuntu package version
-
-If you decide to use a specific version of Mesos, which does exist as an Ubuntu package, enter the version number to the optional `mesos_version` configuration option.
-
-    image = "ubuntu-1504-vivid-v20151120"
-    mesos_version = "0.25.0-0.2.70.ubuntu1504"
-
-#### Mesos built from a specific git commit
-
-You might want to try Mesos installed from a specific commit (e.g. "69d4cf654", or "master"). In order to do it, build a GCE virtual machine image (see [images/README.md](images/README.md)) with Mesos installed and use the `GCE_IMAGE_NAME` you give it as the `image` configuration option, e.g.:
-
-    image = "ubuntu-1404-trusty-mesos"
 
 ### Get the Terraform module
 
@@ -98,7 +86,7 @@ Ports 80, 443 and 22 are open on all the machines within the cluster. Accessing 
 Use the following commands to download `client.ovpn` file. Then use it to establish VPN with the cluster.
 
 ```
-OVPNFILE=`terraform output -module mesos openvpn`
+OVPNFILE=`terraform output -module dcos openvpn`
 scp -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $OVPNFILE .
 sudo openvpn --config client.ovpn
 ```
