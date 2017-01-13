@@ -1,9 +1,9 @@
-resource "google_compute_instance" "mesos-master" {
+resource "google_compute_instance" "dcos-master" {
   count        = "${var.masters}"
-  name         = "${var.name}-mesos-master-${count.index}"
+  name         = "${var.name}-dcos-master-${count.index}"
   machine_type = "${var.master_machine_type}"
   zone         = "${var.zone}"
-  tags         = ["mesos-master", "http", "https", "ssh", "vpn"]
+  tags         = ["dcos-master", "http", "https", "ssh", "vpn"]
 
   disk {
     image = "${var.image}"
@@ -26,7 +26,7 @@ resource "google_compute_instance" "mesos-master" {
 
   # network interface
   network_interface {
-    subnetwork = "${google_compute_subnetwork.mesos-net.name}"
+    subnetwork = "${google_compute_subnetwork.dcos-net.name}"
 
     access_config {
       // ephemeral address
@@ -40,7 +40,7 @@ resource "google_compute_instance" "mesos-master" {
     private_key = "${file(var.gce_ssh_private_key_file)}"
   }
 
-  # install mesos, haproxy, docker, openvpn, and configure the node
+  # install dcos, haproxy, docker, openvpn, and configure the node
   provisioner "remote-exec" {
     scripts = [
       "${path.module}/scripts/common_install_redhat.sh",
@@ -52,5 +52,5 @@ resource "google_compute_instance" "mesos-master" {
 }
 
 output "openvpn" {
-  value = "${var.gce_ssh_user}@${google_compute_instance.mesos-master.0.network_interface.0.access_config.0.assigned_nat_ip}:/home/${var.gce_ssh_user}/openvpn/client.ovpn"
+  value = "${var.gce_ssh_user}@${google_compute_instance.dcos-master.0.network_interface.0.access_config.0.assigned_nat_ip}:/home/${var.gce_ssh_user}/openvpn/client.ovpn"
 }

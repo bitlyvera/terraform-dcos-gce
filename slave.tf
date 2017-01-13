@@ -1,9 +1,9 @@
-resource "google_compute_instance" "mesos-slave" {
+resource "google_compute_instance" "dcos-slave" {
   count        = "${var.slaves}"
-  name         = "${var.name}-mesos-slave-${count.index}"
+  name         = "${var.name}-dcos-slave-${count.index}"
   machine_type = "${var.slave_machine_type}"
   zone         = "${var.zone}"
-  tags         = ["mesos-slave", "http", "https", "ssh"]
+  tags         = ["dcos-slave", "http", "https", "ssh"]
 
   disk {
     image = "${var.image}"
@@ -23,7 +23,7 @@ resource "google_compute_instance" "mesos-slave" {
   }
 
   network_interface {
-    subnetwork = "${google_compute_subnetwork.mesos-net.name}"
+    subnetwork = "${google_compute_subnetwork.dcos-net.name}"
 
     access_config {
       //Ephemeral IP
@@ -37,7 +37,7 @@ resource "google_compute_instance" "mesos-slave" {
     private_key = "${file(var.gce_ssh_private_key_file)}"
   }
 
-  # install mesos, haproxy and docker
+  # install dcos, haproxy and docker
   provisioner "remote-exec" {
     scripts = [
       "${path.module}/scripts/common_install_redhat.sh",

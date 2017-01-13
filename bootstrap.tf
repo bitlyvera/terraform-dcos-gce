@@ -1,8 +1,8 @@
-resource "google_compute_instance" "mesos-bootstrap" {
-  name         = "${var.name}-mesos-bootstrap"
+resource "google_compute_instance" "dcos-bootstrap" {
+  name         = "${var.name}-dcos-bootstrap"
   machine_type = "${var.bootstrap_machine_type}"
   zone         = "${var.zone}"
-  tags         = ["mesos-bootstrap", "http", "https", "ssh"]
+  tags         = ["dcos-bootstrap", "http", "https", "ssh"]
 
   disk {
     image = "${var.image}"
@@ -14,9 +14,9 @@ resource "google_compute_instance" "mesos-bootstrap" {
     mastercount = "${var.masters}"
     clustername = "${var.name}"
     domain      = "${var.domain}"
-    master_ips  = "${join("\n-", google_compute_instance.mesos-master.*.network_interface.0.address)}"
-    master_ip   = "${google_compute_instance.mesos-master.0.network_interface.0.address}"
-    slave_ips   = "${join("\n-", google_compute_instance.mesos-slave.*.network_interface.0.address)}"
+    master_ips  = "${join("\n-", google_compute_instance.dcos-master.*.network_interface.0.address)}"
+    master_ip   = "${google_compute_instance.dcos-master.0.network_interface.0.address}"
+    slave_ips   = "${join("\n-", google_compute_instance.dcos-slave.*.network_interface.0.address)}"
     user        = "${var.gce_ssh_user}"
   }
 
@@ -25,7 +25,7 @@ resource "google_compute_instance" "mesos-bootstrap" {
   }
 
   network_interface {
-    subnetwork = "${google_compute_subnetwork.mesos-net.name}"
+    subnetwork = "${google_compute_subnetwork.dcos-net.name}"
 
     access_config {
       //Ephemeral IP
@@ -53,9 +53,9 @@ resource "google_compute_instance" "mesos-bootstrap" {
 }
 
 output "bootstrap_ip" {
-  value = "${google_compute_instance.mesos-bootstrap.network_interface.0.access_config.0.assigned_nat_ip}"
+  value = "${google_compute_instance.dcos-bootstrap.network_interface.0.access_config.0.assigned_nat_ip}"
 }
 
 output "bootstrap" {
-  value = "${var.gce_ssh_user}@${google_compute_instance.mesos-bootstrap.network_interface.0.access_config.0.assigned_nat_ip}"
+  value = "${var.gce_ssh_user}@${google_compute_instance.dcos-bootstrap.network_interface.0.access_config.0.assigned_nat_ip}"
 }

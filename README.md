@@ -46,7 +46,7 @@ Create a file `dcos.tf` containing something like this:
         slaves                   = "2"
         subnetwork               = "10.20.30.0/24"
         domain                   = "example.com"
-        mesos_version            = "0.28.2"
+      # dcos_version             = "1.8"
         image                    = "centos-cloud/centos-7"
         slave_machine_type       = "n1-highmem-2"
         master_machine_type      = "n1-highmem-2"
