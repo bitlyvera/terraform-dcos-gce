@@ -89,12 +89,6 @@ scp -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 sudo openvpn --config client.ovpn
 ```
 
-### View the DC/OS UI 
-Once the VPN is up, you can access the DC/OS ui on the master node:
-```
-open http://`terraform output -module dcos master`
-````
-
 ### Use the DC/OS CLI on the bootstrap node
 Once the VPN is up, you can access the DC/OS cli on the bootstrap node.
 
@@ -110,6 +104,12 @@ dcos package install spark
 ```
 dcos spark run --submit-args='-Dspark.mesos.coarse=true --driver-cores 1 --driver-memory 1024M --class org.apache.spark.examples.SparkPi https://downloads.mesosphere.com/spark/assets/spark-examples_2.10-1.4.0-SNAPSHOT.jar 2'
 ```
+
+### View the DC/OS UI 
+While the VPN is connected, you can access the DC/OS ui on the master node:
+```
+open http://`terraform output -module dcos master`
+````
 
 ### Destroy the cluster
 When you're done, clean up the cluster with
