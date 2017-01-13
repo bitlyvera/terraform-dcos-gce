@@ -14,9 +14,9 @@ resource "google_compute_instance" "dcos-bootstrap" {
     mastercount = "${var.masters}"
     clustername = "${var.name}"
     domain      = "${var.domain}"
-    master_ips  = "${join("\n-", google_compute_instance.dcos-master.*.network_interface.0.address)}"
+    master_ips  = "${join("\n- ", google_compute_instance.dcos-master.*.network_interface.0.address)}"
     master_ip   = "${google_compute_instance.dcos-master.0.network_interface.0.address}"
-    slave_ips   = "${join("\n-", google_compute_instance.dcos-slave.*.network_interface.0.address)}"
+    slave_ips   = "${join("\n- ", google_compute_instance.dcos-slave.*.network_interface.0.address)}"
     user        = "${var.gce_ssh_user}"
   }
 
