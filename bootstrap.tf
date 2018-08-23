@@ -4,10 +4,12 @@ resource "google_compute_instance" "dcos-bootstrap" {
   zone         = "${var.zone}"
   tags         = ["dcos-bootstrap", "http", "https", "ssh"]
 
-  disk {
-    image = "${var.image}"
-    type  = "pd-ssd"
-    size  = "200"
+  boot_disk {
+    initialize_params = {
+      image = "${var.image}"
+      type  = "pd-ssd"
+      size  = "200"
+      }
   }
 
   metadata {
