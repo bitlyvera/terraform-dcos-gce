@@ -5,10 +5,12 @@ resource "google_compute_instance" "dcos-master" {
   zone         = "${var.zone}"
   tags         = ["dcos-master", "http", "https", "ssh", "vpn"]
 
-  disk {
-    image = "${var.image}"
-    type  = "pd-ssd"
-    size  = "64"
+  boot_disk {
+    initialize_params = {
+      image = "${var.image}"
+      type  = "pd-ssd"
+      size  = "64"
+    }
   }
 
   # declare metadata for configuration of the node
