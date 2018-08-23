@@ -34,7 +34,7 @@ openssl rsa -in ~/.ssh/id_rsa -out decrypted.private.key
 Create a file `dcos.tf` containing something like this:
 
     module "dcos" {
-        source                   = "github.com/sgreben/terraform-dcos-gce"
+        source                   = "github.com/bitlyvera/terraform-dcos-gce"
         account_file             = "/path/to/your.key.json"
         project                  = "your google project ID"
         region                   = "europe-west1"
